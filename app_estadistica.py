@@ -4,6 +4,9 @@ import sqlite3
 from scipy import stats
 import numpy as np
 import io
+import geopandas as gpd
+from shapely.geometry import Point
+import matplotlib.pyplot as plt
 
 
 # -------------------------
@@ -171,6 +174,31 @@ st.download_button(
 
 st.subheader("📌 Cantidad de árboles por especie")
 st.dataframe(df["especie"].value_counts())
+
+#agregar mapa
+
+def str_to_point(ubic_str):
+    lat_str, lon_str = ubic_str.split(';')
+    lat, lon = float(lat_str), float(lon_str)
+    return Point(lon, lat)
+
+df['geometry'] = df['ubicación'].apply(str_to_point)
+gdf_puntos = gpd.GeoDataFrame(df, geometry='geometry', crs='EPSG:4326')
+gdf_mapa = gpd.read_file("Mapa/Mapa/mapa/geoBoundaries-PAN-ADM2.shp")
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(10,8))
+gdf_mapa.plot(edgecolor='black', cmap='Pastel1', ax=ax)
+gdf_puntos.plot(ax=ax, color='red', markersize=50)
+
+for idx, row in gdf_mapa.iterrows():
+    ax.annotate(text=row['shapeName'], xy=row['geometry'].centroid.coords[0],
+                horizontalalignment='center', fontsize=8)
+
+ax.set_axis_off()
+st.pyplot(fig)
+
+
 
 st.markdown("""
 ---
