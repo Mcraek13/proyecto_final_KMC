@@ -171,3 +171,9 @@ st.download_button(
 
 st.subheader("📌 Cantidad de árboles por especie")
 st.dataframe(df["especie"].value_counts())
+
+st.markdown("""
+---
+🧑‍🔬 **Desarrollado por [K. Mc Rae Calvo]**  
+📍 Proyecto de muestreo forestal con Python + SQLite + Streamlit  
+""")
